@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<doc>
+	<mgr dispname="COREmanager" name="core">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgcoremgr</mp>
+		<need_license>no</need_license>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="amd64" coreversion="" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/amd64/COREmanager/install.alpha.tgz" version="5.21.0-14.11.10+14.11" /><release arch="amd64" coreversion="" name="beta" os="FreeBSD-9" url="/5/FreeBSD/amd64/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="amd64" coreversion="" name="release" os="FreeBSD-9" url="/5/FreeBSD/amd64/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="i386" coreversion="" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/i386/COREmanager/install.alpha.tgz" version="5.21.0-14.11.10+14.05" /><release arch="i386" coreversion="" name="beta" os="FreeBSD-9" url="/5/FreeBSD/i386/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="i386" coreversion="" name="release" os="FreeBSD-9" url="/5/FreeBSD/i386/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="i686" coreversion="" name="alpha" os="Linux" url="/5/Linux/i686/COREmanager/install.alpha.tgz" version="5.22.0-14.12.04+11.21-j929" /><release arch="i686" coreversion="" name="beta" os="Linux" url="/5/Linux/i686/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="i686" coreversion="" name="release" os="Linux" url="/5/Linux/i686/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="x86_64" coreversion="" name="alpha" os="Linux" url="/5/Linux/x86_64/COREmanager/install.alpha.tgz" version="5.22.0-14.12.04+11.14-j929" /><release arch="x86_64" coreversion="" name="beta" os="Linux" url="/5/Linux/x86_64/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="x86_64" coreversion="" name="release" os="Linux" url="/5/Linux/x86_64/COREmanager/install.5.21.5.tgz" version="5.21.5" /><release arch="x86_64" coreversion="" name="beta" os="Windows" url="/5/Windows/x86_64/COREmanager/COREmanager.5.17.8.msi" version="5.17.8" /><release arch="x86_64" coreversion="" name="alpha" os="Windows" url="/5/Windows/x86_64/COREmanager/COREmanager.msi" version="5.17.0-20142706171328" /><release arch="x86_64" coreversion="" name="release" os="Windows" url="/5/Windows/x86_64/COREmanager/COREmanager.5.17.8.msi" version="5.17.8" /><release arch="x86_64" coreversion="" name="beta" os="Windows2012" url="/5/Windows2012/x86_64/COREmanager/COREmanager.5.17.8.msi" version="5.17.8" /><release arch="x86_64" coreversion="" name="release" os="Windows2012" url="/5/Windows2012/x86_64/COREmanager/COREmanager.5.17.8.msi" version="5.17.8" /></mgr>
+	<mgr dispname="IPmanager" name="ipmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgipmgr</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="amd64" coreversion="5.14.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/amd64/IPmanager/install.alpha.tgz" version="5.14.0-25.03.14_11:06_IRKT" /><release arch="amd64" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/amd64/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="amd64" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/amd64/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i386" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/i386/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i386" coreversion="5.14.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/i386/IPmanager/install.alpha.tgz" version="5.14.0-25.03.14_11:06_IRKT" /><release arch="i386" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/i386/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.14.0" name="alpha" os="Linux" url="/5/Linux/i686/IPmanager/install.alpha.tgz" version="5.14.0-25.03.14_11:06_IRKT" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.14.0" name="alpha" os="Linux" url="/5/Linux/x86_64/IPmanager/install.alpha.tgz" version="5.14.0-25.03.14_11:06_IRKT" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/IPmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/IPmanager/install.5.21.4.tgz" version="5.21.4" /></mgr>
+	<mgr dispname="DNSmanager" name="dnsmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgdnsmgr</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="amd64" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/amd64/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="amd64" coreversion="5.12.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/amd64/DNSmanager/install.alpha.tgz" version="5.22.0-14.12.05+12.58" /><release arch="amd64" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/amd64/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i386" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/i386/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i386" coreversion="5.12.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/i386/DNSmanager/install.alpha.tgz" version="5.20.0-14.10.03+15.05" /><release arch="i386" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/i386/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.12.0" name="alpha" os="Linux" url="/5/Linux/i686/DNSmanager/install.alpha.tgz" version="5.22.0-14.12.05+12.59-j237" /><release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/DNSmanager/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.12.0" name="alpha" os="Linux" url="/5/Linux/x86_64/DNSmanager/install.alpha.tgz" version="5.22.0-14.12.05+12.57-j237" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/DNSmanager/install.5.21.4.tgz" version="5.21.4" /></mgr>
+	<mgr dispname="VMmanager KVM" name="vmmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgvmmgr</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="x86_64" coreversion="5.13.0" name="alpha" os="Linux" url="/5/Linux/x86_64/VMmanager/install.alpha.tgz" version="5.13.0-06.02.14_13:43_IRKT" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/VMmanager/install.5.21.11.tgz" version="5.21.11" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/VMmanager/install.5.21.11.tgz" version="5.21.11" /></mgr>
+	<mgr dispname="VMmanager Cloud" name="vmmgr.cloud">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgvmmgr_cloud</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/VMmanager-Cloud/install.5.21.11.tgz" version="5.21.11" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/VMmanager-Cloud/install.5.21.11.tgz" version="5.21.11" /><release arch="x86_64" coreversion="5.13.0" name="alpha" os="Linux" url="/5/Linux/x86_64/VMmanager-Cloud/install.alpha.tgz" version="5.13.0-06.02.14_13:43_IRKT" /></mgr>
+	<mgr dispname="ISPmanager Lite" name="ispmgr.lite">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgispmgr_lite</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="amd64" coreversion="5.21.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/amd64/ISPmanager-Lite/install.alpha.tgz" version="5.21.0-14.11.10+14.34" /><release arch="amd64" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/amd64/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="amd64" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/amd64/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="i386" coreversion="5.21.0" name="alpha" os="FreeBSD-9" url="/5/FreeBSD/i386/ISPmanager-Lite/install.alpha.tgz" version="5.21.0-14.11.10+14.34" /><release arch="i386" coreversion="5.21.2" name="beta" os="FreeBSD-9" url="/5/FreeBSD/i386/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="i386" coreversion="5.21.5" name="release" os="FreeBSD-9" url="/5/FreeBSD/i386/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="i686" coreversion="5.22.0" name="alpha" os="Linux" url="/5/Linux/i686/ISPmanager-Lite/install.alpha.tgz" version="5.22.0-14.12.05+12.11-j107" /><release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="x86_64" coreversion="5.22.0" name="alpha" os="Linux" url="/5/Linux/x86_64/ISPmanager-Lite/install.alpha.tgz" version="5.22.0-14.12.05+12.11-j107" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/ISPmanager-Lite/install.5.21.6.tgz" version="5.21.6" /><release arch="x86_64" coreversion="5.10.1" name="alpha" os="Windows" url="/5/Windows/x86_64/ISPmanager-Lite/ISPmanager.msi" version="5.1.0-20132811135558" /><release arch="x86_64" coreversion="5.17.4" name="beta" os="Windows" url="/5/Windows/x86_64/ISPmanager-Lite/ISPmanager.5.17.6.msi" version="5.17.6" /><release arch="x86_64" coreversion="5.17.7" name="release" os="Windows" url="/5/Windows/x86_64/ISPmanager-Lite/ISPmanager.5.17.6.msi" version="5.17.6" /><release arch="x86_64" coreversion="5.17.4" name="beta" os="Windows2012" url="/5/Windows2012/x86_64/ISPmanager-Lite/ISPmanager.5.17.6.msi" version="5.17.6" /><release arch="x86_64" coreversion="5.17.7" name="release" os="Windows2012" url="/5/Windows2012/x86_64/ISPmanager-Lite/ISPmanager.5.17.6.msi" version="5.17.6" /></mgr>
+	<mgr dispname="VMmanager OVZ" name="vemgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgvemgr</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="i686" coreversion="5.10.2" name="alpha" os="Linux" url="/5/Linux/i686/VEmanager/install.alpha.tgz" version="5.2.3-28.11.13_12:13_IRKT" /><release arch="x86_64" coreversion="5.10.2" name="alpha" os="Linux" url="/5/Linux/x86_64/VEmanager/install.alpha.tgz" version="5.2.3-28.11.13_12:13_IRKT" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/VEmanager/install.5.21.6.tgz" version="5.21.6" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/VEmanager/install.5.21.6.tgz" version="5.21.6" /></mgr>
+	<mgr dispname="TESTmanager" name="testmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgtestmgr</mp>
+		<need_license>no</need_license>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	</mgr>
+	<mgr dispname="GSmanager" name="gsmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkggsmgr</mp>
+		<need_license>no</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	</mgr>
+	<mgr dispname="DCImanager Essential" name="dcimgr.essential">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgdcimgr_essential</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/DCImanager-Essential/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/DCImanager-Essential/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/DCImanager-Essential/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.11.0" name="alpha" os="Linux" url="/5/Linux/x86_64/DCImanager-Essential/install.alpha.tgz" version="5.3.0-10.01.14_09:57_IRKT" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/DCImanager-Essential/install.5.21.4.tgz" version="5.21.4" /></mgr>
+	<mgr dispname="DCImanager Progressive" name="dcimgr.progressive">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgdcimgr_progressive</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/DCImanager-Progressive/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/DCImanager-Progressive/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/DCImanager-Progressive/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.10.1" name="alpha" os="Linux" url="/5/Linux/x86_64/DCImanager-Progressive/install.alpha.tgz" version="5.2.0-03.12.13_14:20_IRKT" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/DCImanager-Progressive/install.5.21.4.tgz" version="5.21.4" /></mgr>
+	<mgr dispname="DCImanager Enterprise" name="dcimgr.enterprise">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgdcimgr_enterprise</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	<release arch="i686" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/i686/DCImanager-Enterprise/install.5.21.4.tgz" version="5.21.4" /><release arch="i686" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/i686/DCImanager-Enterprise/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.2" name="beta" os="Linux" url="/5/Linux/x86_64/DCImanager-Enterprise/install.5.21.4.tgz" version="5.21.4" /><release arch="x86_64" coreversion="5.21.5" name="release" os="Linux" url="/5/Linux/x86_64/DCImanager-Enterprise/install.5.21.4.tgz" version="5.21.4" /></mgr>
+	<mgr dispname="BILLmanager" name="billmgr">
+		<trustlevel>isp</trustlevel>
+		<mp>mpmgr__pkgbillmgr</mp>
+		<need_license>yes</need_license>
+		<root_privileges>yes</root_privileges>
+		<author email="sales@ispsystem.com" name="ISPsystem" www="http://ispsystem.com" />
+	</mgr>
+</doc>

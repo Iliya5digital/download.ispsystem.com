@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<paramlist product="ispmgr">
+	<paramgroup name="services">
+		<object name="ssh">
+			<parameter name="binpath">
+				<value>sshd</value>
+			</parameter>
+		</object>
+		<object name="apache2">
+			<parameter name="binpath">
+				<value>apache2</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>http</value>
+                        </parameter>
+		</object>
+                <object name="httpd">
+                        <parameter name="binpath">
+                                <value>httpd.itk</value>
+                        </parameter>
+                        <parameter name="type">
+                                <value>http</value>
+                        </parameter>
+                </object>
+                <object name="ihttpd">
+                        <parameter name="binpath">
+                                <value>ihttpd</value>
+                        </parameter>
+                </object>
+		<object name="nginx">
+			<parameter name="binpath">
+				<value>nginx</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>http</value>
+                        </parameter>
+		</object>
+		<object name="sendmail">
+			<parameter name="binpath">
+				<value>sendmail-mta</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>smtp</value>
+                        </parameter>
+		</object>
+		<object name="exim4">
+			<parameter name="binpath">
+				<value>exim4</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>smtp</value>
+                        </parameter>
+		</object>
+		<object name="postfix">
+			<parameter name="binpath">
+				<value>master</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>smtp</value>
+                        </parameter>
+		</object>
+		<object name="dovecot">
+			<parameter name="binpath">
+				<value>dovecot</value>
+			</parameter>
+		</object>
+		<object name="milter-greylist">
+			<parameter name="binpath">
+				<value>milter-greylist</value>
+			</parameter>
+		</object>
+		<object name="postgrey">
+			<parameter name="binpath">
+				<value>/usr/sbin/postg</value>
+			</parameter>
+		</object>
+		<object name="opendkim">
+			<parameter name="binpath">
+				<value>opendkim</value>
+			</parameter>
+		</object>
+		<object name="spamassassin">
+			<parameter name="binpath">
+				<value>spamass-milter</value>
+			</parameter>
+		</object>
+		<object name="mysql">
+			<parameter name="binpath">
+				<value>mysqld</value>
+			</parameter>
+		</object>
+		<object name="postgresql">
+			<parameter name="binpath">
+				<value>postgres</value>
+			</parameter>
+		</object>
+		<object name="bind9">
+			<parameter name="binpath">
+				<value>named</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>dns</value>
+                        </parameter>
+		</object>
+		<object name="pdns">
+			<parameter name="binpath">
+				<value>pdns_server</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>dns</value>
+                        </parameter>
+		</object>
+		<object name="nsd">
+			<parameter name="binpath">
+				<value>nsd</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>dns</value>
+                        </parameter>
+		</object>
+		<object name="proftpd">
+			<parameter name="binpath">
+				<value>proftpd</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>ftp</value>
+                        </parameter>
+		</object>
+		<object name="pure-ftpd">
+			<parameter name="binpath">
+				<value>pure-ftpd</value>
+			</parameter>
+                        <parameter name="type">
+                                <value>ftp</value>
+                        </parameter>
+		</object>
+		<object name="php5-fpm">
+			<parameter name="binpath">
+				<value>php5-fpm</value>
+			</parameter>
+		</object>
+		<object name="clamav">
+			<parameter name="binpath">
+				<value>clamd</value>
+			</parameter>
+		</object>
+	</paramgroup>
+</paramlist>
