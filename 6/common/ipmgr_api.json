@@ -1,0 +1,2616 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IPmanager 6 API",
+    "description": "IPmanager 6 API",
+    "version": "3.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://127.0.0.1/api/ip/v3"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "ses6"
+      },
+      "headerHost": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "host"
+      }
+    },
+    "requestBodies": {
+      "IppoolCreateEditSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/IppoolCreateEditSchema"
+            }
+          }
+        }
+      },
+      "UserspaceCreateEditSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserspaceCreateEditSchema"
+            }
+          }
+        }
+      },
+      "DnsblCreateEditSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DnsblCreateEditSchema"
+            }
+          }
+        }
+      },
+      "IpnetCreateEditSchema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/IpnetCreateEditSchema"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "IppoolSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userspace": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          },
+          "total_ip": {
+            "type": "string"
+          },
+          "using_ip": {
+            "type": "string"
+          }
+        }
+      },
+      "IppoolInListSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userspace": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          },
+          "is_public": {
+            "type": "string"
+          },
+          "using_ip": {
+            "type": "string"
+          },
+          "using_ipv4": {
+            "type": "string"
+          },
+          "using_ipv6": {
+            "type": "string"
+          },
+          "total_ip": {
+            "type": "string"
+          },
+          "total_ipv4": {
+            "type": "string"
+          },
+          "total_ipv6": {
+            "type": "string"
+          },
+          "ipnets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "gateway": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "IppoolListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IppoolInListSchema"
+            }
+          }
+        }
+      },
+      "IppoolCreateEditSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Pool name",
+            "type": "string",
+            "example": "Default",
+            "minLength": 1
+          },
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          },
+          "using_ip": {
+            "type": "string",
+            "description": "IP addresses in use"
+          },
+          "total_ip": {
+            "type": "string",
+            "description": "Number of all range IP addresses that can be allocated"
+          }
+        }
+      },
+      "RangeSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "family": {
+            "type": "integer",
+            "enum": [
+              2,
+              10
+            ],
+            "description": "2 and 10 are the values for identifying IPv4 and IPv6 correspondingly"
+          },
+          "ippool": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "using_ip": {
+            "type": "string",
+            "description": "IP addresses in use"
+          },
+          "total_ip": {
+            "type": "string",
+            "description": "Number of all range IP addresses that can be allocated"
+          },
+          "first": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "locked": {
+            "type": "boolean",
+            "description": "Locked status for current IP address"
+          }
+        }
+      },
+      "RangeListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeSchema"
+            }
+          }
+        }
+      },
+      "RangeCreateEditSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "IP range",
+            "type": "string",
+            "example": "192.168.0.0/24"
+          }
+        }
+      },
+      "UserspaceCreateEditSchema": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          }
+        }
+      },
+      "UserspaceInfoSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "is_public": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "UserspaceListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserspaceInfoSchema"
+            }
+          }
+        }
+      },
+      "DnsblSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "DnsblListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DnsblSchema"
+            }
+          }
+        }
+      },
+      "DnsblCreateEditSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Domain name",
+            "type": "string",
+            "format": "hostname",
+            "example": "pbl.spamhaus.org"
+          }
+        }
+      },
+      "Id": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        }
+      },
+      "EmptySchema": {
+        "type": "object"
+      },
+      "SuccessSchema": {
+        "$ref": "#/components/schemas/Id"
+      },
+      "TaskSchema": {
+        "type": "object",
+        "properties": {
+          "task": {
+            "type": "integer"
+          }
+        }
+      },
+      "SuccessTaskSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "task": {
+            "type": "integer"
+          }
+        }
+      },
+      "SuccessTaskArraySchema": {
+        "properties": {
+          "task": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "ErrorSchema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PluginStatusResponse": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "The DNSproxy plugin status"
+          }
+        },
+        "type": "object"
+      },
+      "IpSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "ipnet": {
+            "type": "integer"
+          },
+          "ipnet_name": {
+            "type": "string"
+          },
+          "ippool": {
+            "type": "integer"
+          },
+          "parent": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "busy",
+              "special",
+              "locked",
+              "problem",
+              "service",
+              "extended",
+              "dnsbl",
+              "deleted",
+              "check"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "userspace": {
+            "type": "integer"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "first": {
+            "type": "string"
+          }
+        }
+      },
+      "IpListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IpSchema"
+            }
+          }
+        }
+      },
+      "IpAllocateSchema": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "description": "Domain name",
+            "type": "string",
+            "example": "example.com"
+          },
+          "family": {
+            "description": "IPv4 and IPv6 addresses",
+            "type": "string",
+            "enum": [
+              "ipv4",
+              "ipv6"
+            ],
+            "example": "ipv4"
+          },
+          "ip_prefix": {
+            "description": "IP address prefix",
+            "type": "integer",
+            "example": "24"
+          },
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          },
+          "prefered_net": {
+            "description": "Prefered network identifier for allocation",
+            "type": "integer"
+          },
+          "subnet_by_address": {
+            "description": "Allocate subnet like a number of addresses. Do not use this in production",
+            "type": "boolean",
+            "default": false
+          },
+          "ready_for_empty_gw": {
+            "description": "Allocate IP from network without gateway",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "IpAllocateSuccessSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The address identifier",
+            "type": "integer"
+          },
+          "ids": {
+            "description": "The array of addresss identifiers",
+            "deprecated": true,
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "IpCreateSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "IP address",
+            "type": "string",
+            "example": "192.168.0.1"
+          },
+          "domain": {
+            "description": "Domain name",
+            "type": "string",
+            "example": "example.com"
+          },
+          "status": {
+            "description": "IP address status",
+            "type": "string",
+            "enum": [
+              "busy",
+              "special",
+              "locked",
+              "problem",
+              "service",
+              "extended",
+              "dnsbl",
+              "deleted"
+            ],
+            "example": "locked"
+          },
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          },
+          "ippool": {
+            "description": "The pool identifier",
+            "type": "integer"
+          }
+        }
+      },
+      "IpEditSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "description": "Domain name",
+            "type": "string",
+            "example": "example.com",
+            "format": "hostname"
+          },
+          "status": {
+            "description": "IP address status",
+            "type": "string",
+            "enum": [
+              "busy",
+              "special",
+              "locked",
+              "problem",
+              "service",
+              "extended",
+              "dnsbl",
+              "deleted"
+            ],
+            "example": "locked"
+          },
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          },
+          "locked": {
+            "type": "boolean",
+            "description": "Lock IP address"
+          }
+        }
+      },
+      "IpHistorySchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The history record identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "The address or subnet name"
+          },
+          "reference": {
+            "type": "integer",
+            "description": "The address or subnet identifier or null"
+          },
+          "date_time": {
+            "type": "string",
+            "description": "The time when the record was created"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "old": {
+                "type": "object",
+                "description": "The old address info, before edit"
+              },
+              "new": {
+                "type": "object",
+                "description": "The new address info, after edit"
+              }
+            }
+          }
+        }
+      },
+      "IpHistoryListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IpHistorySchema"
+            }
+          }
+        }
+      },
+      "Ipv6PrefixSchema": {
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "type": "integer"
+          }
+        }
+      },
+      "GatewaySchema": {
+        "type": "object",
+        "properties": {
+          "allow_non_subnet_gateway": {
+            "type": "boolean"
+          }
+        }
+      },
+      "IpnetSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "first": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "family": {
+            "type": "integer",
+            "enum": [
+              2,
+              10
+            ],
+            "description": "2 and 10 are used for identifying IPv4 and IPv6 correspondingly"
+          },
+          "mask": {
+            "type": "integer"
+          },
+          "gateway": {
+            "type": "string"
+          },
+          "userspace": {
+            "type": "integer"
+          },
+          "vlan": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "using_ip": {
+            "type": "string",
+            "description": "IP addresses in use"
+          },
+          "total_ip": {
+            "type": "string",
+            "description": "The number of all network IP addresses that can be allocated"
+          },
+          "need_reserve": {
+            "type": "boolean"
+          }
+        }
+      },
+      "IpnetInListSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "first": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          },
+          "family": {
+            "type": "integer",
+            "enum": [
+              2,
+              10
+            ],
+            "description": "2 and 10 are used for identifying IPv4 and IPv6 correspondingly"
+          },
+          "mask": {
+            "type": "integer"
+          },
+          "gateway": {
+            "type": "string"
+          },
+          "userspace": {
+            "type": "integer"
+          },
+          "vlan": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "using_ip": {
+            "type": "string",
+            "description": "IP addresses in use"
+          },
+          "total_ip": {
+            "type": "string",
+            "description": "The number of all network IP addresses that can be allocated"
+          },
+          "need_reserve": {
+            "type": "boolean"
+          },
+          "ippools": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "IpnetListSchema": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IpnetInListSchema"
+            }
+          }
+        }
+      },
+      "IpnetCreateEditSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Network address",
+            "type": "string",
+            "example": "192.168.0.0/24"
+          },
+          "gateway": {
+            "description": "Gateway address",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "example": "192.168.0.1"
+          },
+          "vlan": {
+            "description": "VLAN identifier",
+            "type": "string",
+            "example": "69"
+          },
+          "note": {
+            "description": "Comment",
+            "type": "string",
+            "example": "Some usage info"
+          },
+          "need_reserve": {
+            "description": "Reserve problem IP addresses from network",
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "userspace",
+      "description": "Userspace"
+    },
+    {
+      "name": "ipnet",
+      "description": "IP network"
+    },
+    {
+      "name": "range",
+      "description": "IP range"
+    },
+    {
+      "name": "ippool",
+      "description": "IP pool"
+    },
+    {
+      "name": "ip",
+      "description": "IP-address"
+    },
+    {
+      "name": "dnsbl",
+      "description": "DNSBL"
+    },
+    {
+      "name": "plugin",
+      "description": "Plugin"
+    },
+    {
+      "name": "dnsproxy",
+      "description": "DNSproxy plugin"
+    },
+    {
+      "name": "settings",
+      "description": "Settings"
+    }
+  ],
+  "security": [
+    {
+      "cookieAuth": [],
+      "headerHost": []
+    }
+  ],
+  "paths": {
+    "/ippool": {
+      "get": {
+        "tags": [
+          "ippool"
+        ],
+        "summary": "List of IP pools",
+        "description": "Returns a list of IP pools that are used for allocating IP addresses",
+        "operationId": "ippool_list",
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IppoolListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ippool/{pool_id}": {
+      "get": {
+        "tags": [
+          "ippool"
+        ],
+        "summary": "IP pool information",
+        "operationId": "ippool_info",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "The pool identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IppoolSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ippool"
+        ],
+        "summary": "Edit the IP pool",
+        "operationId": "ippool_edit",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "The pool identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/IppoolCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ippool"
+        ],
+        "summary": "Delete the IP pool",
+        "operationId": "ippool_delete",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "The pool identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace/{userspace_id}/ippool": {
+      "post": {
+        "tags": [
+          "ippool"
+        ],
+        "summary": "Create an IP pool through the userspace",
+        "operationId": "ippool_create",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/IppoolCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The pool has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/range": {
+      "get": {
+        "tags": [
+          "range"
+        ],
+        "summary": "List of IP ranges in pools",
+        "description": "Returns a list of IP ranges in all existing pools",
+        "operationId": "range_list",
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RangeListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ippool/{pool_id}/range": {
+      "post": {
+        "tags": [
+          "range"
+        ],
+        "summary": "Create the IP range in the pool",
+        "operationId": "range_create",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "The pool identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RangeCreateEditSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The range has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/range/{range_id}": {
+      "get": {
+        "tags": [
+          "range"
+        ],
+        "summary": "IP range information",
+        "operationId": "range_info",
+        "parameters": [
+          {
+            "name": "range_id",
+            "in": "path",
+            "description": "Range identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RangeSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "range"
+        ],
+        "summary": "Edit the IP range",
+        "operationId": "range_edit",
+        "parameters": [
+          {
+            "name": "range_id",
+            "in": "path",
+            "description": "Range identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RangeCreateEditSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "range"
+        ],
+        "summary": "Delete the IP range",
+        "operationId": "range_delete",
+        "parameters": [
+          {
+            "name": "range_id",
+            "in": "path",
+            "description": "Range identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/range/{range_id}/ip": {
+      "get": {
+        "tags": [
+          "range"
+        ],
+        "summary": "List of IP addresses in ranges",
+        "operationId": "range_ip_list",
+        "parameters": [
+          {
+            "name": "range_id",
+            "in": "path",
+            "description": "Range identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace": {
+      "get": {
+        "tags": [
+          "userspace"
+        ],
+        "summary": "Usersapce list",
+        "description": "Returns a list of userspaces that are used for differentiating IP addresses that belong to different users",
+        "operationId": "userspace_list",
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserspaceListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "userspace"
+        ],
+        "summary": "Create a userspace",
+        "operationId": "userspace_add",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserspaceCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The record has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error creating the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace/{userspace_id}": {
+      "get": {
+        "tags": [
+          "userspace"
+        ],
+        "summary": "The userspace info",
+        "operationId": "userspace_info",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserspaceInfoSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "userspace"
+        ],
+        "summary": "Edit the userspace",
+        "operationId": "userspace_edit",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserspaceCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "userspace"
+        ],
+        "summary": "Delete the userspace",
+        "operationId": "userspace_delete",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dnsbl": {
+      "get": {
+        "tags": [
+          "dnsbl"
+        ],
+        "summary": "DNSBL list",
+        "description": "Returns the DNSBL list",
+        "operationId": "dnsbl_list",
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DnsblListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "dnsbl"
+        ],
+        "summary": "Creating the DNSBL list",
+        "operationId": "dnsbl_create",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/DnsblCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The record has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dnsbl/{dnsbl_id}": {
+      "get": {
+        "tags": [
+          "dnsbl"
+        ],
+        "summary": "The DNSBL information",
+        "operationId": "dnsbl_info",
+        "parameters": [
+          {
+            "name": "dnsbl_id",
+            "in": "path",
+            "description": "The record identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DnsblSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "dnsbl"
+        ],
+        "summary": "Edit the DNSBL",
+        "operationId": "dnsbl_edit",
+        "parameters": [
+          {
+            "name": "dnsbl_id",
+            "in": "path",
+            "description": "The record identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/DnsblCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "dnsbl"
+        ],
+        "summary": "Delete the DNSBL record",
+        "operationId": "dnsbl_delete",
+        "parameters": [
+          {
+            "name": "dnsbl_id",
+            "in": "path",
+            "description": "The record identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/dnsproxy/enable": {
+      "post": {
+        "tags": [
+          "dnsproxy",
+          "plugin"
+        ],
+        "operationId": "plugin_dnsproxy_enable_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activating the DNSproxy plugin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessTaskSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error activating the DNSproxy plugin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "summary": "DNSproxy plugin activation"
+      }
+    },
+    "/plugin/dnsproxy/disable": {
+      "post": {
+        "tags": [
+          "dnsproxy",
+          "plugin"
+        ],
+        "operationId": "plugin_dnsproxy_disable_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DNSproxy plugin deactivation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error deactivating the plugin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "summary": "DNSproxy plugin deactivation"
+      }
+    },
+    "/plugin/dnsproxy/status": {
+      "get": {
+        "tags": [
+          "dnsproxy",
+          "plugin"
+        ],
+        "operationId": "plugin_dnsproxy_status_get",
+        "responses": {
+          "200": {
+            "description": "DNSproxy plugin status has been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PluginStatusResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving DNSproxy plugin status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Receiving DNSproxy plugin status"
+      }
+    },
+    "/ip": {
+      "get": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "List of IP addresses",
+        "description": "Returns the list of all IP addresses",
+        "operationId": "ip_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "where",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ip/{ip_id}": {
+      "get": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "The IP address information",
+        "operationId": "ip_info",
+        "parameters": [
+          {
+            "name": "ip_id",
+            "in": "path",
+            "description": "The IP address identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "Edit IP address",
+        "operationId": "ip_edit",
+        "parameters": [
+          {
+            "name": "ip_id",
+            "in": "path",
+            "description": "The IP address identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpEditSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "Delete the IP address",
+        "operationId": "ip_delete",
+        "parameters": [
+          {
+            "name": "ip_id",
+            "in": "path",
+            "description": "The IP address identifier'",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "with_check",
+            "in": "query",
+            "description": "Set whether DNSBL checking is needed",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The IP address has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ipnet/{net_id}/ip": {
+      "post": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "Create an IP address",
+        "operationId": "ip_create",
+        "parameters": [
+          {
+            "name": "net_id",
+            "in": "path",
+            "description": "Network identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpCreateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IP address has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace/{userspace_id}/ip": {
+      "post": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "Trying to create the IP address from the userspace without ip_net",
+        "operationId": "ip_create_from_userspace",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpCreateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IP address has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ippool/{pool_id}/ip": {
+      "post": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "IP address allocation",
+        "operationId": "ip_allocate",
+        "parameters": [
+          {
+            "name": "pool_id",
+            "in": "path",
+            "description": "The pool identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpAllocateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IP address has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpAllocateSuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ip/dnsproxy/sync": {
+      "post": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "IP addresses sync on DNSproxy",
+        "operationId": "ip_dnsproxy_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IP addresses synchronized on DNSproxy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The error of synchronizing IP addresses on DNSproxy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace/{userspace_id}/history/{address}": {
+      "get": {
+        "tags": [
+          "ip"
+        ],
+        "summary": "Getting history of the address or subnet",
+        "operationId": "history_address",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The address or subnet to get history of",
+            "required": true,
+            "example": "192.168.0.5 or 192.168.0.4/30",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got the address history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpHistoryListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Getting the address history failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/ipv6_prefix": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Edit ipv6 settings",
+        "operationId": "settings_ipv6_prefix",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ipv6PrefixSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The setting has been successfully changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error changing the setting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/gateway": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Edit gateway settings",
+        "operationId": "settings_gateway",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GatewaySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The setting has been successfully changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error changing the setting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/migrate_ipmgr5": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Migration from IPmanager 5 status",
+        "operationId": "migrate_ipmgr5_status",
+        "responses": {
+          "200": {
+            "description": "Successfully read IPmanager 5 migration status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error getting IPmanager 5 migration status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/migrate_ipmgr5": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Running IP addresses migration from IPmanager 5",
+        "operationId": "migrate_ipmgr5",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dbhost": {
+                    "type": "string",
+                    "description": "IP address of server with IPmanager 5 mysql database"
+                  },
+                  "dbname": {
+                    "type": "string",
+                    "description": "Name of IPmanager 5 mysql database"
+                  },
+                  "dbuser": {
+                    "type": "string",
+                    "description": "User name for IPmanager 5 mysql database"
+                  },
+                  "dbpassword": {
+                    "type": "string",
+                    "description": "User password for IPmanager 5 mysql database"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task for migration from IPmanager 5 successfully registered and started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Failed to start migration from IPmanager 5",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ipnet": {
+      "get": {
+        "tags": [
+          "ipnet"
+        ],
+        "summary": "Networks list",
+        "description": "Returns the list of all created networks",
+        "operationId": "ipnet_list",
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpnetListSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ipnet/{net_id}": {
+      "get": {
+        "tags": [
+          "ipnet"
+        ],
+        "summary": "The network information",
+        "operationId": "ipnet_info",
+        "parameters": [
+          {
+            "name": "net_id",
+            "in": "path",
+            "description": "Network identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The data have been received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IpnetSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ipnet"
+        ],
+        "summary": "Edit network",
+        "operationId": "ipnet_edit",
+        "parameters": [
+          {
+            "name": "net_id",
+            "in": "path",
+            "description": "Network identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IpnetCreateEditSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The data have been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ipnet"
+        ],
+        "summary": "Delete the network",
+        "operationId": "ipnet_delete",
+        "parameters": [
+          {
+            "name": "net_id",
+            "in": "path",
+            "description": "Network identifier",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Deletion error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userspace/{userspace_id}/ipnet": {
+      "post": {
+        "tags": [
+          "ipnet"
+        ],
+        "summary": "Create a network",
+        "operationId": "ipnet_create",
+        "parameters": [
+          {
+            "name": "userspace_id",
+            "in": "path",
+            "description": "Userspace identifier or 'public'",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/IpnetCreateEditSchema"
+        },
+        "responses": {
+          "200": {
+            "description": "The network has been successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessSchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

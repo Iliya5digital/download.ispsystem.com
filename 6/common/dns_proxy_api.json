@@ -1,0 +1,2384 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DNS Proxy service 6 API",
+    "description": "DNS Proxy service 6 API",
+    "version": "3.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://127.0.0.1/dnsproxy/v3"
+    }
+  ],
+  "tags": [
+    {
+      "name": "settings",
+      "description": "Settings of DNS API connection"
+    },
+    {
+      "name": "zone",
+      "description": "DNS Zone"
+    },
+    {
+      "name": "record",
+      "description": "DNS Record"
+    },
+    {
+      "name": "misc",
+      "description": "General"
+    }
+  ],
+  "paths": {
+    "/zone/{zone_id}/record": {
+      "post": {
+        "operationId": "zone_id_record_post",
+        "parameters": [
+          {
+            "description": "Unique identifier of a zone",
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "content": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Raw record data, depends on type of record, for example for \"A\" record it's IP address"
+                  },
+                  "type": {
+                    "enum": [
+                      "ptr"
+                    ],
+                    "type": "string"
+                  },
+                  "skip_task": {
+                    "type": "boolean",
+                    "description": "To sync records. The records in the DNS server must be created independently."
+                  },
+                  "ip_prefix": {
+                    "type": "integer",
+                    "description": "IP prefix for PTR zone that uses for current record"
+                  }
+                },
+                "required": [
+                  "name",
+                  "content",
+                  "type"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create a new record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error creating new record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "A new DNS record creation",
+        "tags": [
+          "record"
+        ]
+      },
+      "get": {
+        "operationId": "zone_id_record_get",
+        "parameters": [
+          {
+            "description": "Unique identifier of a zone",
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record Information Received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "list": {
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "enum": [
+                              "ptr"
+                            ],
+                            "type": "string"
+                          },
+                          "zone": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "enum": [
+                              "ok",
+                              "fail",
+                              "in_progress"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error getting information about zone entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Getting DNS Zone Records",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record": {
+      "post": {
+        "operationId": "record_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "content": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Raw record data, depends on type of record, for example for \"A\" record it's IP address"
+                  },
+                  "type": {
+                    "enum": [
+                      "ptr"
+                    ],
+                    "type": "string"
+                  },
+                  "skip_task": {
+                    "type": "boolean",
+                    "description": "To sync records. The records in the DNS server must be created independently."
+                  },
+                  "ip_prefix": {
+                    "type": "integer",
+                    "description": "IP prefix for PTR zone that uses for current record"
+                  }
+                },
+                "required": [
+                  "name",
+                  "content",
+                  "type"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create a new record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error creating new record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "A new DNS record creation",
+        "tags": [
+          "record"
+        ]
+      },
+      "get": {
+        "operationId": "record_get",
+        "parameters": [
+          {
+            "description": "Unique identifier of a zone",
+            "in": "query",
+            "name": "in_subnet",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "ipv4"
+                },
+                {
+                  "type": "string",
+                  "format": "ipv6"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record Information Received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "list": {
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "enum": [
+                              "ptr"
+                            ],
+                            "type": "string"
+                          },
+                          "zone": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "enum": [
+                              "ok",
+                              "fail",
+                              "in_progress"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error getting information about zone entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Getting DNS Zone Records",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/{record_id}": {
+      "post": {
+        "operationId": "record_id_post",
+        "parameters": [
+          {
+            "description": "Unique identifier for the record",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "content": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "skip_task": {
+                    "type": "boolean",
+                    "description": "To sync records. The records in the DNS server must be created independently."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The record status",
+                    "enum": [
+                      "ok",
+                      "fail",
+                      "in_progress"
+                    ]
+                  },
+                  "status_info": {
+                    "type": "object",
+                    "description": "The record status info",
+                    "additionalProperties": true,
+                    "properties": {}
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Zone Record Editing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error editing zone entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Editing DNS records for a zone",
+        "tags": [
+          "record"
+        ]
+      },
+      "get": {
+        "operationId": "record_id_get",
+        "parameters": [
+          {
+            "description": "Unique identifier for the record.",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record Information Received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "ptr"
+                      ],
+                      "type": "string"
+                    },
+                    "zone": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "enum": [
+                        "ok",
+                        "fail",
+                        "in_progress"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error getting zone record information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Retrieving DNS Zone Record Information",
+        "tags": [
+          "record"
+        ]
+      },
+      "delete": {
+        "operationId": "record_id_delete",
+        "parameters": [
+          {
+            "description": "The unique identifier for the zone record",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record was deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error deleting zone record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Removing a DNS Record Zone",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/sync": {
+      "post": {
+        "operationId": "record_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "record_status": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Records are synchronizing now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error starting records synchronization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Synchronization DNS records on a DNS server",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/sync/result": {
+      "post": {
+        "operationId": "record_sync_result_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "records_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "zones_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The record status",
+                    "enum": [
+                      "ok",
+                      "fail",
+                      "in_progress"
+                    ]
+                  },
+                  "status_info": {
+                    "type": "object",
+                    "description": "The record status info",
+                    "additionalProperties": true,
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Records have been updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error updating records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update DNS records from synchronization task",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/sync/from/ipmgr": {
+      "post": {
+        "operationId": "record_sync_from_ipmgr_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {},
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Records are synchronizing now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error starting records synchronization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Synchronization DNS records on a DNS server",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/sync/from/ipmgr/result": {
+      "post": {
+        "operationId": "record_sync_from_ipmgr_result_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "records": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "record_name": {
+                          "description": "Record name",
+                          "type": "string"
+                        },
+                        "record_content": {
+                          "description": "Record content",
+                          "type": "string"
+                        },
+                        "network_prefix": {
+                          "description": "Network prefix",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Records are synchronizing now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error starting records synchronization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Synchronization DNS records on a DNS server",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/{record_name}/{record_type}": {
+      "post": {
+        "operationId": "record_name_type_post",
+        "parameters": [
+          {
+            "description": "Name of the record",
+            "in": "path",
+            "name": "record_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Type of the record",
+            "in": "path",
+            "name": "record_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "content": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "skip_task": {
+                    "type": "boolean",
+                    "description": "To sync records. The records in the DNS server must be created independently."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The record status",
+                    "enum": [
+                      "ok",
+                      "fail",
+                      "in_progress"
+                    ]
+                  },
+                  "status_info": {
+                    "type": "object",
+                    "description": "The record status info",
+                    "additionalProperties": true,
+                    "properties": {}
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Zone Record Editing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error editing zone entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Editing DNS records for a zone",
+        "tags": [
+          "record"
+        ]
+      },
+      "delete": {
+        "operationId": "record_name_type_delete",
+        "parameters": [
+          {
+            "description": "Name of the record",
+            "in": "path",
+            "name": "record_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Type of the record",
+            "in": "path",
+            "name": "record_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The record was deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error deleting zone record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Removing a DNS Record Zone",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/record/{record_name}/{record_type}/sync": {
+      "post": {
+        "operationId": "record_name_type_sync",
+        "parameters": [
+          {
+            "description": "Name of the record",
+            "in": "path",
+            "name": "record_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Type of the record",
+            "in": "path",
+            "name": "record_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {},
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Record are synchronizing now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error starting record synchronization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Synchronization DNS record on a DNS server",
+        "tags": [
+          "record"
+        ]
+      }
+    },
+    "/reset": {
+      "post": {
+        "operationId": "reset",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {},
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Service settings reset succeed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Service settings reset failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Service settings reset (e.g. delete DNS zones, records, API connection information)",
+        "tags": [
+          "misc"
+        ]
+      }
+    },
+    "/settings/dns": {
+      "post": {
+        "operationId": "settings_dns",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "params": {
+                    "oneOf": [
+                      {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string"
+                          },
+                          "password": {
+                            "minLength": 6,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "address",
+                          "password"
+                        ]
+                      },
+                      {
+                        "additionalProperties": false,
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "username": {
+                            "type": "string"
+                          },
+                          "password": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "username",
+                          "password"
+                        ]
+                      }
+                    ]
+                  },
+                  "type": {
+                    "enum": [
+                      "powerdns",
+                      "dnsmgr"
+                    ],
+                    "type": "string",
+                    "description": "Type of DNS server, to which will connect"
+                  },
+                  "nameservers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "params",
+                  "type"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The connection configured for API of a DNS server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error has occurred while configure connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Configure connection to API of a DNS server",
+        "tags": [
+          "settings"
+        ]
+      },
+      "get": {
+        "operationId": "settings_dns_get",
+        "responses": {
+          "200": {
+            "description": "DNS connection settings information recieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "params": {
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "string"
+                            },
+                            "password": {
+                              "minLength": 6,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "address",
+                            "password"
+                          ]
+                        }
+                      ]
+                    },
+                    "type": {
+                      "enum": [
+                        "powerdns"
+                      ],
+                      "type": "string",
+                      "description": "Type of DNS server, to which will connect"
+                    },
+                    "nameservers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "isp_idn_hostname"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving DNS information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Getting DNS API connection information",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/zone": {
+      "post": {
+        "operationId": "zone_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "ptr"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A new DNS zone created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error has occurred while new zone creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "A new DNS zone creation",
+        "tags": [
+          "zone"
+        ]
+      },
+      "get": {
+        "operationId": "zone_get",
+        "responses": {
+          "200": {
+            "description": "Zones Information Received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "list": {
+                      "items": {
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving zone information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Getting DNS Zone Information",
+        "tags": [
+          "zone"
+        ]
+      }
+    },
+    "/zone/{zone_id}": {
+      "get": {
+        "operationId": "zone_id_get",
+        "parameters": [
+          {
+            "description": "The unique identifier of a DNS zone",
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone information is received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error receiving zone information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Getting DNS Zone Information",
+        "tags": [
+          "zone"
+        ]
+      },
+      "delete": {
+        "operationId": "zone_id_delete",
+        "parameters": [
+          {
+            "description": "The unique identifier or name of a DNS zone",
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The DNS zone has been successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error occurs while delete zone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The DNS zone deletion",
+        "tags": [
+          "zone"
+        ]
+      }
+    },
+    "/zone/{zone_name}/{zone_type}": {
+      "delete": {
+        "operationId": "zone_name_type_delete",
+        "parameters": [
+          {
+            "description": "Name of the zone",
+            "in": "path",
+            "name": "zone_name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Type of the zone",
+            "in": "path",
+            "name": "zone_type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The DNS zone has been successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "task": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error occurs while delete zone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "msg": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The DNS zone deletion",
+        "tags": [
+          "zone"
+        ]
+      }
+    }
+  },
+  "components": {
+    "requestBodies": {
+      "EmptyRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "additionalProperties": false,
+              "properties": {},
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "EmptySchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "ErrorSchema": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "msg": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Id": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SuccessSchema": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SuccessTaskArraySchema": {
+        "properties": {
+          "task": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SuccessTaskOnlySchema": {
+        "properties": {
+          "task": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SuccessTaskSchema": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "task": {
+            "type": "integer"
+          }
+        }
+      },
+      "SuccessTaskSchemaWithIds": {
+        "properties": {
+          "id": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "task": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RecordCreatePostParams": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "content": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Raw record data, depends on type of record, for example for \"A\" record it's IP address"
+          },
+          "type": {
+            "enum": [
+              "ptr"
+            ],
+            "type": "string"
+          },
+          "skip_task": {
+            "type": "boolean",
+            "description": "To sync records. The records in the DNS server must be created independently."
+          },
+          "ip_prefix": {
+            "type": "integer",
+            "description": "IP prefix for PTR zone that uses for current record"
+          }
+        },
+        "required": [
+          "name",
+          "content",
+          "type"
+        ],
+        "type": "object"
+      },
+      "RecordSyncPostParams": {
+        "additionalProperties": false,
+        "properties": {
+          "record_status": {
+            "enum": [
+              "fail"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RecordSyncResultPostParams": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "records_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "zones_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "The record status",
+            "enum": [
+              "ok",
+              "fail",
+              "in_progress"
+            ]
+          },
+          "status_info": {
+            "type": "object",
+            "description": "The record status info",
+            "additionalProperties": true,
+            "properties": {}
+          }
+        }
+      },
+      "RecordSyncFromIpmgrResultPostParams": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "record_name": {
+                  "description": "Record name",
+                  "type": "string"
+                },
+                "record_content": {
+                  "description": "Record content",
+                  "type": "string"
+                },
+                "network_prefix": {
+                  "description": "Network prefix",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RecordEditPostParams": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "skip_task": {
+            "type": "boolean",
+            "description": "To sync records. The records in the DNS server must be created independently."
+          },
+          "status": {
+            "type": "string",
+            "description": "The record status",
+            "enum": [
+              "ok",
+              "fail",
+              "in_progress"
+            ]
+          },
+          "status_info": {
+            "type": "object",
+            "description": "The record status info",
+            "additionalProperties": true,
+            "properties": {}
+          }
+        },
+        "type": "object"
+      },
+      "RecordGetResponse": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "ptr"
+            ],
+            "type": "string"
+          },
+          "zone": {
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "fail",
+              "in_progress"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RecordListResponse": {
+        "properties": {
+          "list": {
+            "items": {
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "ptr"
+                  ],
+                  "type": "string"
+                },
+                "zone": {
+                  "type": "integer"
+                },
+                "status": {
+                  "enum": [
+                    "ok",
+                    "fail",
+                    "in_progress"
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "ZoneCreatePostParams": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "ptr"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "ZoneGetResponse": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ZoneListResponse": {
+        "properties": {
+          "list": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SettingsPostParams": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "minLength": 6,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "address",
+                  "password"
+                ]
+              },
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url",
+                  "username",
+                  "password"
+                ]
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "powerdns",
+              "dnsmgr"
+            ],
+            "type": "string",
+            "description": "Type of DNS server, to which will connect"
+          },
+          "nameservers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "params",
+          "type"
+        ],
+        "type": "object"
+      },
+      "PowerDNSParams": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "password": {
+            "minLength": 6,
+            "type": "string"
+          }
+        },
+        "required": [
+          "address",
+          "password"
+        ]
+      },
+      "DNSmanagerParams": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "username",
+          "password"
+        ]
+      },
+      "SettingsGetParams": {
+        "properties": {
+          "params": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "minLength": 6,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "address",
+                  "password"
+                ]
+              }
+            ]
+          },
+          "type": {
+            "enum": [
+              "powerdns"
+            ],
+            "type": "string",
+            "description": "Type of DNS server, to which will connect"
+          },
+          "nameservers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "isp_idn_hostname"
+            }
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
+}

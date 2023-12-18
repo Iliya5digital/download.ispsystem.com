@@ -1,0 +1,2073 @@
+openapi: 3.0.2
+info:
+  title: Auth API
+  description: 'Authorization and authentication API for EXOsoft products (VEPP, DCI, VM)'
+  version: 4.0.0
+  contact:
+    email: api@exosoft.com
+servers:
+  - url: 'https://my.vepp.com/src/v4'
+  - url: 'https://localhost:8080/src/v4'
+  - url: 'http://localhost:7000/'
+paths:
+  '/public/roles':
+    get:
+      deprecated: true
+      summary: Get list of additional role`s names
+      description: >-
+        It is not so deprecated as experimental. OpenAPI has no property
+        to show this. Basically auth service does not know anything about
+        builtin roles so you have to add them to environment variable
+        BUILTIN_ROLES. For example, it's value could be "@admin,@user".
+      tags:
+        - Permissions
+      responses:
+        '200':
+          description: You will recieve the list of the roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                      example: "@admin_support"
+
+  '/public/token':
+    post:
+      summary: Authenticate user using username and password
+      description: >-
+        Using this nahdler you just authenticate user in the system
+      operationId: Auth
+      tags:
+        - Token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User name. We are using user E-Mail as login
+                  example: admin@example.com
+                password:
+                  type: string
+                  description: User password
+                confirmed:
+                  type: boolean
+                  description: >-
+                    If token is not confirmed you must confirm it using
+                    handle /public/tokan/confirm
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403IpForbidden'
+
+
+  '/token':
+    post:
+      summary: Create long life or infinit token
+      description: >-
+        Such tokens should be used for integration purpose only
+      operationId: PostToken
+      tags:
+        - Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_at:
+                  type: string
+                  format: datetime
+                  description: Token exparation date
+                  example: 2022-01-01 00:00:00
+                description:
+                  type: string
+                  maxLength: 255
+                  description: Any comment you want to add for new token
+                  example: Integration with google :)
+              required:
+                - expires_at
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/token/{token_id}':
+    delete:
+      summary: Remove token
+      description: >-
+        Most tokens has limited lifetime. But if you want to revoke access for
+        some integrated applications or users you can manually remove their tokens
+      operationId: DeleteToken
+      tags:
+        - Token
+      security:
+        - Token: []
+        - Internal: []
+      parameters:
+        - in: path
+          name: token_id
+          required: true
+          description: Token id or value
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/su':
+    post:
+      summary: Create new token for trustee
+      description: >-
+        Makes possible to act as specified user. You should be administrator
+        or trustee for this user
+      operationId: UserSu
+      tags:
+        - Token
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/self/back':
+    post:
+      summary: Get back to trusteee account
+      description: >-
+        Makes possible to return to previous level after making SU
+      operationId: SelfBack
+      tags:
+        - Token
+      requestBody:
+        $ref: '#/components/requestBodies/Empty'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/user':
+    get:
+      summary: Get list of the users
+      description: >-
+        Returns complete list of the users. To limit it you can use standard
+        filtering and pagination query string syntax
+      operationId: UserList
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/ListFilter'
+        - $ref: '#/components/parameters/ListWhere'
+        - $ref: '#/components/parameters/ListOrderBy'
+        - $ref: '#/components/parameters/ListLimit'
+        - $ref: '#/components/parameters/ListAction'
+      responses:
+        '200':
+          description: You will recieve the list of the users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserGet'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+    post:
+      summary: Create new user/administrator
+      description: >-
+        Register new user in the system. User will not be able to login before
+        he/her will be granted access to some instance
+      operationId: CreateUser
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/CreateUser'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/instance/{instance_id}/user':
+    get:
+      summary: Get list of the instance users
+      description: >-
+        Returns complete list of the instance users. To limit it you can use standard
+        filtering and pagination query string syntax
+      operationId: InstanceUserList
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/ListFilter'
+        - $ref: '#/components/parameters/ListWhere'
+        - $ref: '#/components/parameters/ListOrderBy'
+        - $ref: '#/components/parameters/ListLimit'
+        - $ref: '#/components/parameters/ListAction'
+      responses:
+        '200':
+          $ref: '#/components/responses/200InstanceUserList'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/self/password':
+    post:
+      summary: Change current user password
+      description: >-
+        User can change password for himself only if he/she can provide current one.
+        Or he/she can use password recovery procedure and change it via E-Mail
+      operationId: SelfPassword
+      tags:
+        - Users
+      security:
+        - Token: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  description: >-
+                    Old user password
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: New password
+              required:
+                - password
+                - old_password
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/user/{user_id}/password':
+    post:
+      summary: Change user password
+      description: >-
+        Administrator can change password for any user in the system
+      operationId: ChangePassword
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: New password
+              required:
+                - password
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/user/{user_id}/lock':
+    post:
+      summary: Add blocking dependency
+      description: >-
+        User with as least one active dependency cannot be deleted
+      operationId: UserLock
+      tags:
+        - Internal
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service:
+                  type: string
+                  description: Service name that have made this request
+                description:
+                  type: string
+                  description: Description
+              required:
+                - service
+                - description
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/user/{user_id}/lock/{service}':
+    delete:
+      summary: Remove blocking dependency
+      description: >-
+        Release user. Service should call this handler if it have locked this
+        user before and does not need it existence any more
+      operationId: UserUnlock
+      tags:
+        - Internal
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - in: path
+          name: service
+          required: true
+          description: Service name was used to create blocking dependency
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/user/{user_id}':
+    post:
+      summary: Edit selected user
+      operationId: EditUser
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        $ref: '#/components/requestBodies/EditUser'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    get:
+      summary: Get user details
+      operationId: GetUser
+      description: Getting user details by user identifier
+      deprecated: true
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserGet'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Completely delete user from the system
+      description: >-
+        User must not be owner of any instance in system.
+        User can not delete himself
+      operationId: UserDelete
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/self':
+    post:
+      summary: Edit yourself
+      operationId: EditSelf
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/EditSelf'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+    get:
+      summary: Get yourself details
+      operationId: GetSelf
+      description: Getting details about yourself
+      tags:
+        - User
+      responses:
+        '200':
+          $ref: '#/components/responses/200UserGet'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/user/{user_id}/acl':
+    post:
+      summary: Set users access control list (ACL)
+      description: >-
+        Sets IPs user allowed to login from
+      tags:
+        - Acl
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      operationId: EditUserAcl
+      requestBody:
+        $ref: '#/components/requestBodies/Acl'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    get:
+      summary: Get users access control list (ACL)
+      description: >-
+        Returns set of IPs user allowed to login from
+      operationId: GetUserAcl
+      tags:
+        - Acl
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Acl'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/self/acl':
+    post:
+      summary: Set users access control list (ACL)
+      description: >-
+        Sets IPs user allowed to login from
+      tags:
+        - Acl
+      operationId: SetSelfAcl
+      requestBody:
+        $ref: '#/components/requestBodies/Acl'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+    get:
+      summary: Get users access control list (ACL)
+      description: >-
+        Returns set of IPs user allowed to login from
+      operationId: GetSelfAcl
+      tags:
+        - Acl
+      responses:
+        '200':
+          $ref: '#/components/responses/200Acl'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/public/global/whoami':
+    get:
+      summary: Get your current roles to single instance services
+      description: >-
+        That handler is used by proxy to check access to single instance
+        services when request contains token
+      deprecated: true
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      tags:
+        - Proxy
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/public/instance/{instance_id}/whoami':
+    get:
+      summary: Get your current roles on selected instance
+      description: >-
+        That handler is used by proxy to check access to multi instance
+        services when request contains token
+      deprecated: true
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InstanceId'
+      tags:
+        - Proxy
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/instance/{instance_id}/import/user':
+    post:
+      summary: Create new user/administrator in selected instance
+      description: >-
+        Register new user in the system and grant access to selected instance.
+        For internal use only. Using simple '/user' handle is more properly way
+        to do it. '/user' handle must be imroved to accept crypted passwords.
+      operationId: InstanceUserImport
+      deprecated: true
+      tags:
+        - Internal
+      security:
+        - Internal: [ ]
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+      requestBody:
+        $ref: '#/components/requestBodies/InstanceUserImport'
+      responses:
+        '200':
+          $ref: '#/components/responses/201Created'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/instance/{instance_id}/user/{user_id}':
+    get:
+      summary: Get roles of selected user in selected instance
+      operationId: GetUserPermissions
+      description: >-
+        That handler is used by proxy to check access to multi instance services
+        when request doesn't contain token but has Internal-Auth header
+      deprecated: true
+      tags:
+        - Proxy
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    post:
+      summary: Grant access to selected instance for selected user
+      operationId: CreateUserPermissions
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Revoke access of selected user to selected instance
+      operationId: RevokeUserPermissions
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/instance/{instance_id}/user/{user_id}/trustee/{trustee_id}':
+    get:
+      summary: Get roles of selected user/trustee pair in selected instance
+      operationId: GetTrusteePermissions
+      description: >-
+        That handler is used by proxy to check access to multi instance services
+        when request doesn't contain token but has Internal-Auth header
+      deprecated: true
+      tags:
+        - Proxy
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/instance/{instance_id}/user/{user_id}/trustee/{trustee_id}/roles':
+    post:
+      summary: Grant access to selected instance for selected trustee
+      operationId: CreateTrusteePermissions
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+                  default:
+                    - '@user'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Revoke access of selected trustee to selected instance
+      operationId: RevokeTrusteePermissions
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/resume':
+    post:
+      summary: Allow user access
+      operationId: UserAccessResume
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        $ref: '#/components/requestBodies/Empty'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/suspend':
+    post:
+      summary: Restrict user access
+      operationId: UserAccessSuspend
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        $ref: '#/components/requestBodies/Empty'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/trustee/{trustee_id}':
+    get:
+      summary: Get roles of selected user/trustee pair
+      operationId: GetTrustee
+      description: >-
+        That handler can be used by proxy to check access to single instance
+        services when request doesn't contain token but has Internal-Auth header.
+        But in general it never should be used (we needent to grant trustee access
+        to single instance services because most of such services are used to
+        manipulate personal user settings)
+      deprecated: true
+      tags:
+        - Proxy
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/trustee/{trustee_id}/roles':
+    post:
+      summary: Grant access to selected trustee
+      operationId: EditTrustee
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+                  default:
+                    - '@user'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Revoke access of selected trustee
+      operationId: DeleteTrustee
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/public/global/whoami/method/{method}/target/{target}':
+    get:
+      summary: Get your current roles to single instance services
+      description: >-
+        That handler is used by proxy to check access to single instance
+        services when request contains token
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      tags:
+        - Proxy
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/public/instance/{instance_id}/whoami/method/{method}/target/{target}':
+    get:
+      summary: Get your current roles on selected instance
+      description: >-
+        That handler is used by proxy to check access to multi instance
+        services when request contains token
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      tags:
+        - Proxy
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/user/{user_id}/method/{method}/target/{target}':
+    get:
+      summary: Get roles of selected user in single instance services
+      description: >-
+        That handler is used by proxy to check access to single instance services
+        when request doesn't contain token but has Internal-Auth header
+      tags:
+        - Proxy
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/user/{user_id}/trustee/{trustee_id}/method/{method}/target/{target}':
+    get:
+      summary: Get roles of selected user/trustee pair
+      description: >-
+        That handler can be used by proxy to check access to single instance
+        services when request doesn't contain token but has Internal-Auth header.
+        But in general it never should be used (we needent to grant trustee access
+        to single instance services because most of such services are used to
+        manipulate personal user settings)
+      tags:
+        - Proxy
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/instance/{instance_id}/user/{user_id}/method/{method}/target/{target}':
+    get:
+      summary: Get roles of selected user in selected instance
+      description: >-
+        That handler is used by proxy to check access to multi instance services
+        when request doesn't contain token but has Internal-Auth header
+      tags:
+        - Proxy
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/instance/{instance_id}/user/{user_id}/trustee/{trustee_id}/method/{method}/target/{target}':
+    get:
+      summary: Get roles of selected user in selected instance
+      description: >-
+        That handler is used by proxy to check access to multi instance services
+        when request doesn't contain token but has Internal-Auth header
+      tags:
+        - Proxy
+      security:
+        - Internal: []
+      parameters:
+        - $ref: '#/components/parameters/InstanceId'
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/TrusteeId'
+        - $ref: '#/components/parameters/Method'
+        - $ref: '#/components/parameters/Target'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Whoami'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/acl':
+    get:
+      summary: Get list of access control lists
+      description: >-
+        That handler is used to get full information about access control lists were setup on system
+      tags:
+        - Acl
+      operationId: AclList
+      deprecated: true
+      responses:
+        '200':
+          description: You wall recieve the list of all existing ACL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AclGet"
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+    post:
+      summary: Create new access control list
+      description: >-
+        Create new one ACL, this handle allows create ACL and add members to it
+      tags:
+        - Acl
+      operationId: CreateAcl
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  description: Unique name
+                ip_list:
+                  type: array
+                  items:
+                    type: string
+                    format: iprange
+                    example: '192.168.0.0/16'
+                members:
+                  type: array
+                  description: List of ACL members
+                  items:
+                    type: string
+                    maxLength: 255
+                    description: User name or user ID
+              required:
+                - name
+                - ip_list
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/acl/{acl_id}':
+    get:
+      summary: Get information about selected ACL
+      description: >-
+        This handle returns same information like /acl does
+      tags:
+        - Acl
+      operationId: AclInfo
+      parameters:
+        - $ref: '#/components/parameters/AclId'
+      deprecated: true
+      responses:
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '200':
+          description: You wall recieve singleACL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AclGet"
+    post:
+      summary: Modify ACL
+      description: >-
+        That handler allows to change ACL and manage its members.
+        If members missed they will be unchanged
+      tags:
+        - Acl
+      operationId: EditAcl
+      parameters:
+        - $ref: '#/components/parameters/AclId'
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  description: Unique name
+                ip_list:
+                  type: array
+                  items:
+                    type: string
+                    format: iprange
+                    example: '192.168.0.0/16'
+                members:
+                  type: array
+                  description: List of ACL members
+                  items:
+                    type: string
+                    maxLength: 255
+                    description: User name or user ID
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Delete ACL
+      description: >-
+        Completely remove ACL
+      operationId: DeleteAcl
+      tags:
+        - Permissions
+      parameters:
+        - $ref: '#/components/parameters/AclId'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/acl/{acl_id}/user/{user_id}':
+    post:
+      summary: Adds ACL member
+      description: >-
+        That handler is will add and return 201Created if new member was added to
+        ACL or 200Ok if member already exists
+      tags:
+        - Acl
+      operationId: AclAddMember
+      parameters:
+        - $ref: '#/components/parameters/AclId'
+        - $ref: '#/components/parameters/UserId'
+      deprecated: true
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '201':
+          $ref: '#/components/responses/201Created'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Removes ACL member
+      description: >-
+        That handler will remove member from ACL
+      tags:
+        - Acl
+      operationId: AclRemoveMember
+      parameters:
+        - $ref: '#/components/parameters/AclId'
+        - $ref: '#/components/parameters/UserId'
+      deprecated: true
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/self/key':
+    post:
+      summary: Create key for current user
+      description: >-
+        Create key that can be used to get token for current user
+      tags:
+        - Key
+      security:
+        - Token: []
+      operationId: SelfKey
+      responses:
+        '201':
+          $ref: '#/components/responses/201Key'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/user/{user_id}/key':
+    post:
+      summary: Create key for specified user
+      description: >-
+        Create key that can be used to get token for selected user
+      tags:
+        - Key
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      operationId: UserKey
+      responses:
+        '201':
+          $ref: '#/components/responses/201Key'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  '/public/key':
+    post:
+      summary: Use key to get authentication token
+      description: >-
+        Use key to get authentication token
+      tags:
+        - Key
+      security: []
+      operationId: AuthByKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: key was got using /self/key or /user/{user_id}/key handles
+              required:
+                - key
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403IpForbidden'
+
+  '/public/confirmation/{confirmation_id}/change_password':
+    post:
+      summary: Change password by confirmation token
+      description: >-
+        Use confirmation received by mail to change user password
+      tags:
+        - User
+      security: []
+      operationId: ChangePasswordByConfirmation
+      parameters:
+        - $ref: '#/components/parameters/ConfirmationId'
+      requestBody:
+        $ref: '#/components/requestBodies/ChangePasswordByConfirmation'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/public/confirmation/{confirmation_id}/invite_user':
+    post:
+      summary: Activate invited user by confirmation token
+      description: >-
+        Use confirmation received by mail to activate user
+      tags:
+        - User
+      security: []
+      operationId: ActivateUserByConfirmation
+      parameters:
+        - $ref: '#/components/parameters/ConfirmationId'
+      requestBody:
+        $ref: '#/components/requestBodies/ActivateUserByConfirmation'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Token'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  '/self/2fa':
+    post:
+      summary: Setup two factor authorization for current user
+      description: >-
+        After successful setup you will be forced to confirm your
+        authentication token by secret code before using it
+      tags:
+        - 2FA
+      security:
+        - Token: []
+      operationId: Setup2FA
+      requestBody:
+        $ref: '#/components/requestBodies/Setup2FA'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403IpForbidden'
+    delete:
+      summary: Turn off two factor authorization for current user
+      tags:
+        - Token
+      security:
+        - Token: []
+      operationId: Delete2FA
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403IpForbidden'
+
+  '/user/{user_id}/2fa':
+    delete:
+      summary: Turn off two factor authorization for selected user
+      tags:
+        - 2FA
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      operationId: Delete2FA
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403IpForbidden'
+
+  '/public/token/confirm':
+    post:
+      summary: Confirm two factor authorization for current token
+      description: >-
+        If 2FA enable for current user you have to confirm your
+        authorization token by calling this handle to use this token
+      tags:
+        - 2FA
+      security: []
+      operationId: TokenConfirm
+      requestBody:
+        $ref: '#/components/requestBodies/TokenConfirm'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  '/public/2fa/qrcode':
+    post:
+      summary: Generate Google Authenticator PNG
+      description: >-
+        It is just generates PNG, no service data will be modified
+      tags:
+        - 2FA
+      security: []
+      operationId: GetQRCode
+      requestBody:
+        $ref: '#/components/requestBodies/GetQRCode'
+      responses:
+        '200':
+          description: QR code image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+
+components:
+  requestBodies:
+    Setup2FA:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              secret:
+                type: string
+                format: base64
+                description: >-
+                  It must be a base64 encoded sequence of 40 random bytes
+                minLength: 56
+                maxLength: 56
+              code:
+                type: integer
+                description: Valid Multi-Factor verification 6-digit code
+            required:
+              - secret
+              - code
+    Acl:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ip_list:
+                type: array
+                items:
+                  type: string
+                  format: iprange
+                  example: '192.168.0.0/16'
+            required:
+              - ip_list
+    Empty:
+      content:
+        application/json:
+          schema:
+            additionalProperties: false
+            properties: {}
+            type: object
+
+    CreateUser:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                maxLength: 255
+                description: User E-Mail will be used as login name
+                example: admin@example.com
+              full_name:
+                type: string
+                maxLength: 255
+                description: User first and last name
+                example: John Smith
+              password:
+                type: string
+                format: password
+                writeOnly: true
+                minLength: 8
+                description: >-
+                  We save only hash so nobody can read it. But you can restore
+                  your password using E-Mail
+              roles:
+                description: Set of the roles for "src" service
+                type: array
+                items:
+                  type: string
+                minItems: 1
+                default:
+                  - '@user'
+              auth_source:
+                type: string
+                default: local
+                enum:
+                  - local
+                  - ldap
+                description: Auth source for authentication
+              email_confirm:
+                type: boolean
+                default: false
+                description: Is email confirmed
+            required:
+              - email
+            additionalProperties: false
+
+    EditSelf:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              full_name:
+                type: string
+                maxLength: 255
+                description: User first and last name
+                example: John Smith
+              lang:
+                type: string
+                description: The user interface language
+                # NOTE(m.lapardin): Maybe we don't need enum
+                enum:
+                  - en
+                  - ru
+                example: en
+
+    EditUser:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              full_name:
+                type: string
+                maxLength: 255
+                description: User first and last name
+                example: John Smith
+              roles:
+                type: array
+                items:
+                  type: string
+                minItems: 1
+              auth_source:
+                type: string
+                enum:
+                  - local
+                  - ldap
+                description: Auth source for authentication
+              email_confirm:
+                type: boolean
+                default: false
+                description: Is email confirmed
+              lang:
+                description: The user interface language
+                type: string
+                # NOTE(m.lapardin): Maybe we don't need enum
+                enum:
+                  - en
+                  - ru
+                example: en
+
+    InstanceUserImport:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                maxLength: 255
+                description: User E-Mail will be used as login name
+              encrypted_password:
+                type: string
+                format: password
+                writeOnly: true
+                minLength: 8
+                description: It must be an encrypted string. We save it as is.
+              roles:
+                description: Set of the roles for "src" service
+                type: array
+                items:
+                  type: string
+                minItems: 1
+              email_confirm:
+                type: boolean
+                default: false
+                description: Is email confirmed
+              state:
+                type: string
+                enum:
+                  - active
+                  - disabled
+                description: User state
+            required:
+              - email
+              - encrypted_password
+              - roles
+            additionalProperties: false
+
+    ChangePasswordByConfirmation:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                format: password
+                minLength: 8
+                description: New password
+            required:
+              - password
+            additionalProperties: false
+
+    ActivateUserByConfirmation:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                format: password
+                minLength: 8
+                description: User password
+              lang:
+                description: The user interface language
+                type: string
+                enum:
+                  - en
+                  - ru
+                default: en
+            required:
+              - password
+            additionalProperties: false
+
+    GetQRCode:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the token in google authenticator
+              secret:
+                type: string
+                format: base64
+                description: >-
+                  It must be a base64 encoded sequence of 40 random bytes
+                minLength: 56
+                maxLength: 56
+              size:
+                type: integer
+                minimum: 177
+                maximum: 1024
+                default: 256
+              recovery:
+                type: string
+                enum:
+                  - low
+                  - medium
+                  - high
+                  - highest
+                default: medium
+            required:
+              - name
+              - secret
+
+    TokenConfirm:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: Token that was got using /public/token function
+              code:
+                type: integer
+                description: Valid Multi-Factor verification 6-digit code
+            required:
+              - token
+              - code
+
+  responses:
+    200Acl:
+      description: Response format for user ACL
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ip_list:
+                type: array
+                items:
+                  type: string
+                  format: iprange
+                  example: '192.168.0.0/16'
+            required:
+              - ip_list
+
+    200Ok:
+      description: Request complete successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+    200Whoami:
+      description: Response format for proxy service
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              owner_id:
+                description: >-
+                  Authorized owner. That value will be used to check access for this session.
+                type: number
+              trustee_id:
+                description: >-
+                  Authorized user. It contains ID of user was used to login to system.
+                  owner_id and trustee_id pair identifies list of current session roles.
+                  If owner and trustee is a same user this property can be omitted
+                type: number
+              roles:
+                nullable: true
+                description: >-
+                  Current users roles. If it is null - no handle was found
+                  (no one role was permitted to call it)
+                type: array
+                items:
+                  type: string
+            required:
+              - roles
+    200InstanceUserList:
+      description: You will recieve the list of the instance users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              list:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGet'
+    200UserGet:
+      description: The user details was get successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserGet'
+    201Token:
+      description: New token was successfully made
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+                description: >-
+                  New token id. It can be used only for deletion
+              token:
+                type: string
+                description: >-
+                  New token. It should be used as security token for
+                  all other requests. Tokens do not saved in database
+                  as plaintext and can not be recovered if you lose it.
+                  You will have to make new one
+
+    201Key:
+      description: New key was successfully made
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+                description: >-
+                  New key id. It is needed to match key in database (for debug purpose only)
+              key:
+                type: string
+                description: >-
+                  New key. It can be used to get security token only.
+                  Keys do not saved in database as plaintext and can not
+                  be recovered if you lose it. You will have to make new one
+
+    401Unauthorized:
+      description: Provided token was incorrect or expired
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    403Forbidden:
+      description: >-
+        Current user have no rights to call this handler or view selected object properties
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    403IpForbidden:
+      description: >-
+        Current user does not allowed to access using current IP
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    404NotFound:
+      description: Required object does not exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    400BadRequest:
+      description: Provided parameters does not match with schema
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - properties:
+                  field:
+                    type: string
+                    description: Field name that have filed the check
+    201Created:
+      description: Required object was created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+                description: Unique object id
+              task:
+                type: string
+                description: >-
+                  Task id. Most objects are not created immedeatly. In most
+                  cases when you recieve result only record in database was
+                  created. To finish object creation system will create "task".
+                  Only when task will be finished object will be ready. You can
+                  wait task using its Id or watching for object itself (it is
+                  prefered way). For details you should read Notifier
+                  documentation
+            required:
+              - id
+
+  schemas:
+    AclGet:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Unique internal user Id
+        name:
+          type: string
+          description: Unique ACL name
+        ip_list:
+          type: array
+          items:
+            type: string
+            format: iprange
+            description: Single ip address, network or range
+        members:
+          type: array
+          items:
+            type: string
+            description: User name
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error description on english
+        code:
+          type: integer
+          description: >-
+            Error code. It was designed to be unique for each place where an error can occur
+
+    UserGet:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Unique internal user Id
+          example: 1
+        uuid:
+          type: string
+          description: Unique user Id. It should be used for all external links
+          example: 295cfef4-5eb4-4bb5-aea7-24c6d6990648
+        email:
+          type: string
+          description: User E-Mail. It is also used as login name
+          example: user@example.com
+        full_name:
+          type: string
+          description: User first and last name
+          example: John Smith
+        roles:
+          type: array
+          items:
+            type: string
+            description: Role name
+            example: "@user"
+          description: User roles for "src" service
+        state:
+          type: string
+          enum:
+            - active
+            - disabled
+          description: User state
+          example: active
+        auth_source:
+          type: string
+          enum:
+            - local
+            - ldap
+          description: Auth source for authentication
+          example: local
+        email_confirm:
+          type: boolean
+          description: Is email confirmed
+        lang:
+          description: The user interface language
+          type: string
+          example: en
+
+  securitySchemes:
+    Token:
+      type: apiKey
+      in: header
+      name: X-XSRF-Token
+      description: Token. See `POST /token` or `POST /public/token`
+
+    Internal:
+      type: apiKey
+      in: header
+      name: Internal-Auth
+      description: >-
+        Internal-Auth header should contain complete response body from `/whoami` handler.
+        If service recieve such header in request it does not check cookie.
+        No one request coming from outside can contain Internal-Auth header even
+        if it does header will be removed by incoming proxy service.
+        Also this header can have value 'on' means that it is internal system request
+        with `@internal` role access
+
+  parameters:
+    Method:
+      in: path
+      name: method
+      required: true
+      schema:
+        type: string
+        enum:
+          - GET
+          - POST
+          - DELETE
+    Target:
+      in: path
+      name: target
+      required: true
+      schema:
+        type: string
+    Token:
+      in: header
+      name: X-XSRF-Token
+      required: true
+      schema:
+        type: string
+      description: >-
+        Token that was got
+    UserId:
+      in: path
+      name: user_id
+      required: true
+      schema:
+        oneOf:
+          - type: string
+            format: email
+            maxLength: 255
+          - type: number
+      description: You can use user Id or user E-Mail
+    AclId:
+      in: path
+      name: acl_id
+      required: true
+      schema:
+        oneOf:
+          - type: string
+            maxLength: 255
+          - type: number
+      description: You can use ACL Id or ACL name
+    TrusteeId:
+      in: path
+      name: trustee_id
+      required: true
+      schema:
+        oneOf:
+          - type: string
+            format: email
+            maxLength: 255
+          - type: number
+      description: >-
+        Trustee - user who was granted with additiobal access by some other user.
+        Trustee always used with user_id (so called owner id). That value will
+        be used to check objects owner if needed. As in `UserId` you can use
+        user Id or user E-Mail for this value.
+    InstanceId:
+      in: path
+      name: instance_id
+      required: true
+      description: >-
+        Existing instance ID. Minimal value - 1.
+      schema:
+        type: number
+    ConfirmationId:
+      in: path
+      name: confirmation_id
+      required: true
+      description: >-
+        Confirmation token for the password restoration
+      schema:
+        type: string
+        maxLength: 255
+    ListFilter:
+      in: query
+      name: filter
+      schema:
+        type: string
+      description: >-
+        List field name. Gets set of unique field values. This parameter used to
+        get values for select input in filtering forms. Filtering, pagination
+        and order parameters will be ignored
+      example: state
+    ListWhere:
+      in: query
+      name: where
+      schema:
+        type: string
+      description: >-
+        Filtering rules for the list. You can use any list field name and set of
+        logical operations (OR, AND, NOT, EQ(=), NE(<>), GT(>), GE(>=), LT(<),
+        LE(<=) and CP(LIKE)) for making filtering conditions
+      example: id GT 100 AND (name CP 'alex%' OR name CP 'georg')
+    ListOrderBy:
+      in: query
+      name: orderby
+      schema:
+        type: array
+        items:
+          type: string
+      description: >-
+        Sorting rules for the list. You can use any list field name and optional
+        ordering parameter (`ASC` and `DESC`). `ASK` is the default so you
+        needent to specify it
+      style: form
+      explode: false
+      example: 'name, age DESC'
+    ListLimit:
+      in: query
+      name: limit
+      schema:
+        type: string
+      description: >-
+        Limit row count in result. It consists from one or two parts separeted
+        by ','. First (optional) - offset, sets first row number to return
+        (counting from 1). Second - size, set maximum row count in result
+      example: '10,20'
+    ListAction:
+      in: query
+      name: action
+      schema:
+        type: string
+        enum:
+          - select
+          - save
+          - delete
+      deprecated: true
+      description: >-
+        You can save your query params `orderby` and `where` or you can use
+        saved one
+
+tags:
+  - name: Token
+    description: authentication tokens management
+  - name: Users
+    description: user management handles
+  - name: Internal
+    description: handles for internal use only
+  - name: Proxy
+    description: set of handles disigned for proxy to check request credentials
+  - name: Permissions
+    description: user roles management
+  - name: Acl
+    description: access control lists management
+  - name: Key
+    description: keys that can be used once to get authentication token
+  - name: 2FA
+    description: set of handles to setup and use two factot authentication
+
+security:
+  - Token: []
+  - Internal: []
