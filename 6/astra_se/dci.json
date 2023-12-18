@@ -1,0 +1,20 @@
+{
+  "Require": {
+    "InstallerVersion": "3.11.1"
+  },
+  "Beta": "2021.110.1618884751",
+  "NginxService": "input",
+  "SocketDirectory": "/opt/ispsystem/installer/",
+  "Releases": [
+    {
+      "Require": {
+        "InstallerVersion": "3.11.1"
+      },
+      "INFO": {
+        "Images": [],
+        "DockerCompose": "http://download.ispsystem.com/6/astra_se/dci/docker-compose.yaml"
+      },
+      "Version": "2021.110.1618884751"
+    }
+  ]
+}

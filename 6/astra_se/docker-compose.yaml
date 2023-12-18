@@ -1,0 +1,441 @@
+version: "3.7"
+services:
+  auth_back:
+    image: docker-registry.ispsystem.com:5000/team/auth/back:6.6.1-astra
+    environment:
+      ALLOW_GREY_NETWORKS: "1"
+      BILL_DEBUG: "1"
+      CONSUL_PORT_8500_TCP_ADDR: consul
+      DOMAIN: ${DOMAIN}
+      INSTANCE_ID: auth
+      KV_STORAGE_ADDR: consul
+      LICENSE_AUTH_TOKEN: ${TOKEN}
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+      PANEL_EDITION: PLATFORM
+      PROXY_SERVICE: input:1500
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_1500_NAME: auth_v3
+      SERVICE_1500_TAGS: reader,backend
+      SERVICE_1501_NAME: auth_v3
+      SERVICE_1501_TAGS: writer,backend
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_HTTP: /status
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+    networks:
+      auth: null
+    depends_on:
+    - mysql
+    - registrator
+    restart: always
+  auth_back4:
+    image: docker-registry.ispsystem.com:5000/ispsystem/experimental/auth:1.2.0-astra
+    environment:
+      AUTH_V3_COMPAT: "on"
+      DATABASE_HOST: mysql
+      DATABASE_NAME: auth
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+      DATABASE_USER: root
+    networks:
+      auth: null
+    depends_on:
+    - mysql
+    - registrator
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 1m
+  auth_front:
+    image: docker-registry.ispsystem.com:5000/team/auth/front/box:3.6.1-astra
+    labels:
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+      SERVICE_NAME: auth_front
+      SERVICE_TAGS: frontend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  batch:
+    image: docker-registry.ispsystem.com:5000/team/common/batch:1.2.0-astra
+    environment:
+      LOG_SETTINGS_FILE_LEVEL: debug
+    labels:
+      SERVICE_NAME: core_v3
+      SERVICE_TAGS: writer,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  consul:
+    image: docker-registry.ispsystem.com:5000/consul:1.8.5-astra
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+      CONSUL_CLIENT_INTERFACE: eth0
+      CONSUL_LOCAL_CONFIG: '{"datacenter":"testing","server":true,"bootstrap":true}'
+    networks:
+      auth: null
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 1m
+  consumer:
+    image: docker-registry.ispsystem.com:5000/team/dci/equip_service/consumer:2.21.12-astra
+    environment:
+      GRAPHITE_HOST: graphite
+      GRAPHITE_PORT: "2103"
+      REDIS_HOST: eservice_msg_queue
+      REDIS_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_PORT: "6379"
+      REDIS_STREAM_STATISTIC_NAME: equip_statistic
+      REDIS_STREAM_STATUS_NAME: equip_status
+      WORKER_GROUP_NAME: daemon_worker
+    labels:
+      NEED_UPDATE: "yes"
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  dci_back:
+    image: docker-registry.ispsystem.com:5000/team/dci/back:5.6.1-astra
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+    dns:
+    - 8.8.8.8
+    - 1.1.1.1
+    - 77.88.8.8
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 1m
+  dci_front:
+    image: docker-registry.ispsystem.com:5000/team/dci/front:0.78.2-astra
+    environment:
+      BASE_HREF: /dci
+      BOX: "true"
+    labels:
+      SERVICE_BOXED: "true"
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+      SERVICE_NAME: dci_front
+      SERVICE_TAGS: static,frontend
+      SERVICE_URI: /dci
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  eservice:
+    image: docker-registry.ispsystem.com:5000/team/dci/equip_service:2.21.12-astra
+    environment:
+      GF_HOST: grafana
+      GF_SECURITY_ADMIN_PASSWORD: ${MYSQL_PASSWORD}
+      GRAPHITE_HOST: graphite
+      GRAPHITE_PORT: "2103"
+      GRAPHITE_RENDER_PORT: "8080"
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_HOST: mysql
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+      REDIS_HOST: eservice_msg_queue
+      REDIS_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_PORT: "6379"
+      REDIS_STREAM_STATISTIC_NAME: equip_statistic
+      REDIS_STREAM_STATUS_NAME: equip_status
+      WORKER_GROUP_NAME: daemon_worker
+    labels:
+      SERVICE_1801_NAME: eservice_v3
+      SERVICE_1801_TAGS: writer,reader,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  eservice_msg_queue:
+    image: docker-registry.ispsystem.com:5000/redis:5.0.5-alpine-astra
+    networks:
+      auth: null
+    command: /usr/local/bin/redis-server --bind 0.0.0.0 --requirepass ${MYSQL_PASSWORD}
+    restart: always
+  grafana:
+    image: docker-registry.ispsystem.com:5000/team/dci/grafana:0.1.2-astra
+    environment:
+      GF_AUTH_LOGIN_COOKIE_NAME: dci6_grafana_session
+      GF_SECURITY_ADMIN_PASSWORD: ${MYSQL_PASSWORD}
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SERVER_ROOT_URL: '%(protocol)s://%(domain)s/grafana/'
+      INSTANCE_ID: "1"
+    labels:
+      SERVICE_3001_NAME: grafana
+      SERVICE_3001_TAGS: writer,reader,backend
+    networks:
+      auth: null
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 1m
+  graphite:
+    image: docker-registry.ispsystem.com:5000/team/dci/graphite:0.2.1-astra
+    volumes:
+    - /opt/ispsystem/dci/graphite_storage:/opt/graphite/storage
+    networks:
+      auth: null
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-file: "10"
+        max-size: 1m
+  input:
+    image: docker-registry.ispsystem.com:5000/team/common/input:0.2.4-astra
+    volumes:
+    - /opt/ispsystem/dci/socket/:/opt/ispsystem/installer/
+    environment:
+      BOX_MODE: "on"
+    ports:
+    - mode: host
+      published: "80"
+      target: "80"
+    - mode: host
+      published: "443"
+      target: "443"
+    networks:
+      auth: null
+    depends_on:
+    - consul
+    restart: always
+  ipmgr:
+    image: docker-registry.ispsystem.com:5000/team/extra/ipmgr:1.5.6-astra
+    environment:
+      PRODUCT: dci
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_1700_NAME: ip_v3
+      SERVICE_1700_TAGS: reader,backend
+      SERVICE_1701_NAME: ip_v3
+      SERVICE_1701_TAGS: writer,backend
+      SERVICE_1702_NAME: ipmgr5_v3
+      SERVICE_1702_TAGS: writer,reader,backend
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  ipmi_proxy_v2_client:
+    image: docker-registry.ispsystem.com:5000/team/dci/ipmi_proxy_v2_client:1.11.8-astra
+    environment:
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_1605_NAME: ipmiproxy_v3
+      SERVICE_1605_TAGS: writer,backend
+      SERVICE_1606_NAME: ipmiproxy_v3
+      SERVICE_1606_TAGS: reader,backend
+      SERVICE_5898_NAME: ipmiproxy_ws
+      SERVICE_5898_TAGS: websocket,backend
+      SERVICE_5899_NAME: ipmiproxy_web
+      SERVICE_5899_TAGS: reader,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  journal:
+    image: docker-registry.ispsystem.com:5000/team/dci/journal:0.0.6-astra
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_NAME: auth
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+      DATABASE_USER: root
+    labels:
+      SERVICE_1900_NAME: journal_v3
+      SERVICE_1900_TAGS: reader,writer,backend
+    networks:
+      auth: null
+    depends_on:
+    - mysql
+    restart: always
+  loki:
+    image: docker-registry.ispsystem.com:5000/grafana/loki:master-1729592-astra
+    networks:
+      auth: null
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: always
+  metric_collector:
+    image: docker-registry.ispsystem.com:5000/team/common/metrica/collector:3.5.1-astra
+    environment:
+      METRIC_RECEIVER_ADDR: metricreport.ispsystem.net:8000
+      PROXY_SERVICE: input:1500
+    labels:
+      SERVICE_8000_NAME: metric
+      SERVICE_8000_TAGS: writer,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    - auth_back
+    restart: always
+  msgsender:
+    image: docker-registry.ispsystem.com:5000/team/common/msgsender:1.10.0-astra
+    environment:
+      INSTANCE_ID: "1"
+      LANG: en_US.UTF-8
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_1500_NAME: msgsender_v3
+      SERVICE_1500_TAGS: reader,backend
+      SERVICE_1501_NAME: msgsender_v3
+      SERVICE_1501_TAGS: writer,backend
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  mysql:
+    container_name: mysql
+    image: docker-registry.ispsystem.com:5000/mysql:5-astra
+    volumes:
+    - /var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: auth
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      auth: null
+    restart: always
+  notifier:
+    image: docker-registry.ispsystem.com:5000/team/common/notifier:2.1.1-astra
+    environment:
+      KV_STORAGE_ADDR: consul
+      LOG_SETTINGS_FILE_LEVEL: debug
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+      SERVICE_NAME: notifier
+      SERVICE_TAGS: websocket,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  plugin:
+    image: docker-registry.ispsystem.com:5000/team/market/plugin:1.3.5-astra
+    volumes:
+    - /opt/ispsystem/dci/socket/:/opt/ispsystem/installer/socket/
+    environment:
+      INSTANCE_ID: "1"
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+    labels:
+      NEED_UPDATE: "yes"
+      SERVICE_80_NAME: plugin_direct
+      SERVICE_80_TAGS: backend,reader,writer
+      SERVICE_1600_NAME: plugin_v3
+      SERVICE_1600_TAGS: reader,backend
+      SERVICE_1601_NAME: plugin_v3
+      SERVICE_1601_TAGS: writer,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+  registrator:
+    image: docker-registry.ispsystem.com:5000/gliderlabs/registrator:master-astra
+    volumes:
+    - /var/run/docker.sock:/tmp/docker.sock
+    labels:
+      NEED_UPDATE: "yes"
+    networks:
+      auth: null
+    hostname: registrator
+    depends_on:
+    - consul
+    command: -explicit -cleanup -useIpFromLabel SERVICE_ADDR -internal -resync 10
+      consul://consul:8500
+    restart: always
+  updater:
+    image: docker-registry.ispsystem.com:5000/team/common/updater:0.0.15-astra
+    volumes:
+    - /opt/ispsystem/dci/socket/:/opt/ispsystem/installer/socket/
+    environment:
+      CONSUL_PORT_8500_TCP_ADDR: consul
+      INSTANCE_ID: "1"
+      KV_STORAGE_ADDR: consul
+      LOG_SETTINGS_FILE_LEVEL: debug
+      MYSQL_DATABASE: auth
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: root
+      PROXY_SERVICE: input:1500
+      REPOSITORY_URL: http://download.ispsystem.com/6/dci
+    labels:
+      SERVICE_1710_NAME: updater_v3
+      SERVICE_1710_TAGS: reader,backend
+      SERVICE_1711_NAME: updater_v3
+      SERVICE_1711_TAGS: writer,backend
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+      SERVICE_TAGS: reader,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    - mysql
+    restart: always
+  validator:
+    image: docker-registry.ispsystem.com:5000/team/common/validator:1.0.0-astra
+    labels:
+      SERVICE_CHECK_DEREGISTER_AFTER: 60m
+      SERVICE_CHECK_INTERVAL: 10s
+      SERVICE_CHECK_TCP: "true"
+      SERVICE_CHECK_TIMEOUT: 1s
+      SERVICE_NAME: validator
+      SERVICE_TAGS: writer,backend
+    networks:
+      auth: null
+    depends_on:
+    - registrator
+    restart: always
+networks:
+  auth: {}
